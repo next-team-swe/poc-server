@@ -66,7 +66,7 @@ async function setAreaTimer(areaId) {
     let currentTime = new Date();
     // If I passed dawn I want to turn everything On with the timer, Off otherwise
     let state = currentTime > civilDawn;
-    let target = civilDusk;
+    let target = state ? civilDusk : civilDawn;
     if(state && currentTime > civilDusk) {
       // For today I have finished, I want to turn off lights tomorrow morning
       let tomorrow = new Date();
@@ -74,7 +74,6 @@ async function setAreaTimer(areaId) {
       target = new Date(SunCalc.getSunTimes(tomorrow, coordinates.latitude, coordinates.longitude).civilDawn.ts);
     }
     let timeout = Math.abs(target - currentTime);
-    console.log(target);
     setTimeout(() => setAreaState(areaId, state), timeout);
   }).catch((reason) => {console.log(reason)});
 }
