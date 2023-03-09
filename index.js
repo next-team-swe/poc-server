@@ -1,8 +1,9 @@
  
 // import { createClient } from '@supabase/supabase-js'
-const { createClient } = require('@supabase/supabase-js')
+const { createClient } = require('@supabase/supabase-js');
 const NodeGeocoder = require('node-geocoder');
 const SunCalc = require('suncalc3');
+const request = require("request");
 
 const options={
     provider: 'locationiq',
@@ -28,7 +29,8 @@ const supabase = createClient('https://banraxrzqacvpzsonavh.supabase.co', 'eyJhb
 supabase
   .channel('any')
   .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'light'}, payload => {
-
+    if(payload.new["state"] != payload.old["state"]) changeLampState("127.0.0.1:5000", payload.new["state"]);
+    if(payload.new["brightness"] != payload.old["brightness"]) changeLampBrightness("127.0.0.1:5000", payload.new["brightness"]);
     //show payload difference
     for (let key in payload.new) {
         if (payload.new[key] != payload.old[key]) {
@@ -37,6 +39,14 @@ supabase
     }
   })
   .subscribe()
+
+function changeLampState(lightAddress, newState) {
+  request.post(`http://${lightAddress}/lamp`, {json: {"lamp_id": 123, "lamp_status": newState}});
+}
+
+function changeLampBrightness(lightAddress, newBrightness) {
+  request.post(`http://${lightAddress}/lamp`, {json: {"lamp_id": 123, "brightness": newBrightness}});
+}
 
 function getCoordinates(address) {
   return new Promise((resolve, reject) => {
