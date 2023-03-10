@@ -29,8 +29,8 @@ const supabase = createClient('https://banraxrzqacvpzsonavh.supabase.co', 'eyJhb
 supabase
   .channel('any')
   .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'light'}, payload => {
-    if(payload.new["state"] != payload.old["state"]) changeLampState("127.0.0.1:5000", payload.new["state"]);
-    if(payload.new["brightness"] != payload.old["brightness"]) changeLampBrightness("127.0.0.1:5000", payload.new["brightness"]);
+    if(payload.new["state"] != payload.old["state"]) changeLampState("http://127.0.0.1:5000/lamp", payload.new["ip_address"], payload.new["state"]);
+    if(payload.new["brightness"] != payload.old["brightness"]) changeLampBrightness("http://127.0.0.1:5000/lamp", payload.new["ip_address"], payload.new["brightness"]);
     //show payload difference
     for (let key in payload.new) {
         if (payload.new[key] != payload.old[key]) {
@@ -40,12 +40,12 @@ supabase
   })
   .subscribe()
 
-function changeLampState(lightAddress, newState) {
-  request.post(`http://${lightAddress}/lamp`, {json: {"lamp_id": 123, "lamp_status": newState}});
+function changeLampState(controllerAddress, lightAddress, newState) {
+  request.post(controllerAddress, {json: {"lamp_id": 123, "lamp_ip": lightAddress, "lamp_status": newState}});
 }
 
-function changeLampBrightness(lightAddress, newBrightness) {
-  request.post(`http://${lightAddress}/lamp`, {json: {"lamp_id": 123, "brightness": newBrightness}});
+function changeLampBrightness(controllerAddress, lightAddress, newBrightness) {
+  request.post(controllerAddress, {json: {"lamp_id": 123, "lamp_ip": lightAddress, "brightness": newBrightness}});
 }
 
 function getCoordinates(address) {
