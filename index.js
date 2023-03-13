@@ -62,9 +62,9 @@ function getCoordinates(address) {
 
 async function setAreaState(areaId, state) {
   await supabase.from("light").update({state: state}).eq("area", areaId);
-  await setAreaTimer(areaId);
+  setAreaTimer(areaId);
   // Sleep needed to respect LocationIQ API limit
-  await new Promise(r => setTimeout(r, 500));
+  await new Promise(r => setTimeout(r, 1000));
 }
 
 async function setAreaTimer(areaId) {
@@ -93,7 +93,7 @@ async function setTimers() {
   for(let i = 0; i < areas.length; ++i) {
     setAreaTimer(areas[i]["id"]);
     // Sleep needed to respect LocationIQ API limit
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 1000));
   }
 }
 
