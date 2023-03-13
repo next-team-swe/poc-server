@@ -41,11 +41,19 @@ supabase
   .subscribe()
 
 function changeLampState(controllerAddress, lightAddress, newState) {
-  request.post(controllerAddress, {json: {"lamp_id": 123, "lamp_ip": lightAddress, "lamp_status": newState}});
+  request.post(controllerAddress, {json: {"lamp_id": 123, "lamp_ip": lightAddress, "lamp_status": newState}}).on("error", (e) => {
+    if(e.code == "ECONNREFUSED") {
+      console.log("The simulator is offline")
+    }
+  });
 }
 
 function changeLampBrightness(controllerAddress, lightAddress, newBrightness) {
-  request.post(controllerAddress, {json: {"lamp_id": 123, "lamp_ip": lightAddress, "brightness": newBrightness}});
+  request.post(controllerAddress, {json: {"lamp_id": 123, "lamp_ip": lightAddress, "brightness": newBrightness}}).on("error", (e) => {
+    if(e.code == "ECONNREFUSED") {
+      console.log("The simulator is offline")
+    }
+  });
 }
 
 function getCoordinates(address) {
